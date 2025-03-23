@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "env": {
+    "VITE_FIREBASE_API_KEY": "@vite_firebase_api_key",
+    "VITE_FIREBASE_PROJECT_ID": "@vite_firebase_project_id",
+    "VITE_FIREBASE_APP_ID": "@vite_firebase_app_id",
+    "VITE_CLOUDINARY_CLOUD_NAME": "@vite_cloudinary_cloud_name"
+  }
+}

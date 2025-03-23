@@ -1,0 +1,64 @@
+Prompt Summary for Another AI
+Project Overview:
+I need a simple pet adoption web app called "Gaby Foster Care" where admins can manage pet profiles (add, edit, delete) and users can view pets on a public home page with basic filtering. The app should use Firebase for authentication and data storage, Cloudinary for photo uploads, and Tailwind CSS for styling. Build it with Next.js 15.2.3, React 18.3.1, and TypeScript, and deploy it on Vercel. The current date is March 23, 2025.
+
+Core Technologies:
+
+Next.js: 15.2.3 (use Webpack for development and production)
+React: 18.3.1
+Firebase: For user authentication and storing pet data
+Cloudinary: For uploading and displaying pet photos
+Tailwind CSS: For styling
+TypeScript: For type safety
+Vercel: For deployment
+npm: For package management
+API Keys and Environment Variables (store in .env.local):
+
+Firebase:
+NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyDQ9jnpAbbCFYvNTLTufRqOkGtHhwkiKdc
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=gaby-foster-care.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=gaby-foster-care
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=gaby-foster-care.firebasestorage.app
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=816052777398
+NEXT_PUBLIC_FIREBASE_APP_ID=1:816052777398:web:0fef218747d60723715117
+Cloudinary:
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=drstad49j
+Cloudinary upload preset: pet-photos (unsigned, folder: pets)
+Pet Information Structure:
+
+Pets are stored in a Firestore collection named pets, with each document representing a pet. The document ID is the petId, and the data structure is:
+typescript
+
+Collapse
+
+Wrap
+
+Copy
+interface Pet {
+  petId: string;        // Document ID (e.g., "pet123")
+  name: string;         // Pet's name (e.g., "Buddy")
+  age: string;          // Pet's age (e.g., "5")
+  breed: string;        // Pet's breed (e.g., "Labrador")
+  size: string;         // Pet's size (e.g., "Large")
+  gender: string;       // Pet's gender (e.g., "Male")
+  temperament: string;  // Pet's temperament (e.g., "Friendly")
+  status: string;       // Pet's status (e.g., "available")
+  photos: string[];     // Array of Cloudinary photo URLs
+  videoUrl?: string;    // Optional video URL
+}
+Filtering:
+
+On the home page, users can filter pets by:
+breed (e.g., "Labrador", "Beagle", "German Shepherd")
+size (e.g., "Small", "Medium", "Large")
+gender (e.g., "Male", "Female")
+status (e.g., "available", "adopted")
+petId (search by exact ID)
+age (e.g., "5")
+Use Firestore queries for server-side filtering of breed, size, gender, status, and petId. Filter age client-side since it’s stored as a string in Firestore.
+Core Features:
+
+Home Page (/): Show a list of pets with filters and a search bar. Display each pet’s photo (using Cloudinary), name, breed, age, size, gender, and status, with a link to view details.
+Login Page (/login): Allow admins to log in using Firebase Authentication.
+Admin Page (/admin): Allow admins to add, edit, and delete pets, including uploading photos to Cloudinary.
+Pet Profile Page (/pet/[id]): Show a pet’s details, photos, and video (if available). Redirect to the home page if the petId is invalid.
