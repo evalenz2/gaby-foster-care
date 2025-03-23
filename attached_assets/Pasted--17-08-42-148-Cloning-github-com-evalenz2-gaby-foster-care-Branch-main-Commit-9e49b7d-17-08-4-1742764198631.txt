@@ -1,0 +1,59 @@
+[17:08:42.148] Cloning github.com/evalenz2/gaby-foster-care (Branch: main, Commit: 9e49b7d)
+[17:08:42.171] Skipping build cache, deployment was triggered without cache.
+[17:08:42.680] Cloning completed: 532.000ms
+[17:08:43.625] Running build in Washington, D.C., USA (East) – iad1
+[17:08:43.801] Running "vercel build"
+[17:08:44.251] Vercel CLI 41.4.1
+[17:08:44.544] Installing dependencies...
+[17:09:01.694] 
+[17:09:01.695] added 440 packages in 17s
+[17:09:01.695] 
+[17:09:01.696] 147 packages are looking for funding
+[17:09:01.696]   run `npm fund` for details
+[17:09:01.758] Detected Next.js version: 15.2.3
+[17:09:01.764] Running "npm run build"
+[17:09:01.880] 
+[17:09:01.880] > gaby-foster-care@0.1.0 build
+[17:09:01.881] > next build
+[17:09:01.881] 
+[17:09:02.491] Attention: Next.js now collects completely anonymous telemetry regarding usage.
+[17:09:02.491] This information is used to shape Next.js' roadmap and prioritize features.
+[17:09:02.492] You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+[17:09:02.492] https://nextjs.org/telemetry
+[17:09:02.492] 
+[17:09:02.594]    ▲ Next.js 15.2.3
+[17:09:02.595] 
+[17:09:02.623]    Creating an optimized production build ...
+[17:09:17.390] 
+[17:09:17.391] [1m[33mwarn[39m[22m - The `content` option in your Tailwind CSS configuration is missing or empty.
+[17:09:17.392] [1m[33mwarn[39m[22m - Configure your content sources or your generated CSS will be missing styles.
+[17:09:17.392] [1m[33mwarn[39m[22m - https://tailwindcss.com/docs/content-configuration
+[17:09:23.979] Failed to compile.
+[17:09:23.979] 
+[17:09:23.979] ./src/app/globals.css
+[17:09:23.979] Module not found: Can't resolve 'tailwindcss'
+[17:09:23.979] 
+[17:09:23.979] https://nextjs.org/docs/messages/module-not-found
+[17:09:23.979] 
+[17:09:23.979] Import trace for requested module:
+[17:09:23.979] ./src/app/globals.css
+[17:09:23.980] 
+[17:09:23.980] ./src/app/globals.css
+[17:09:23.980] Error: Can't resolve 'tailwindcss'
+[17:09:23.980]     at finishWithoutResolve (/vercel/path0/node_modules/next/dist/compiled/webpack/bundle5.js:1:191837)
+[17:09:23.980]     at /vercel/path0/node_modules/next/dist/compiled/webpack/bundle5.js:1:192737
+[17:09:23.980]     at /vercel/path0/node_modules/next/dist/compiled/webpack/bundle5.js:1:193370
+[17:09:23.980]     at eval (eval at create (/vercel/path0/node_modules/next/dist/compiled/webpack/bundle5.js:14:9224), <anonymous>:16:1)
+[17:09:23.980]     at /vercel/path0/node_modules/next/dist/compiled/webpack/bundle5.js:1:193370
+[17:09:23.980]     at eval (eval at create (/vercel/path0/node_modules/next/dist/compiled/webpack/bundle5.js:14:9224), <anonymous>:27:1)
+[17:09:23.980]     at /vercel/path0/node_modules/next/dist/compiled/webpack/bundle5.js:1:175252
+[17:09:23.980]     at /vercel/path0/node_modules/next/dist/compiled/webpack/bundle5.js:1:193370
+[17:09:23.980]     at eval (eval at create (/vercel/path0/node_modules/next/dist/compiled/webpack/bundle5.js:14:9224), <anonymous>:16:1)
+[17:09:23.980]     at /vercel/path0/node_modules/next/dist/compiled/webpack/bundle5.js:1:208998
+[17:09:23.980] 
+[17:09:23.980] https://nextjs.org/docs/messages/module-not-found
+[17:09:23.981] 
+[17:09:23.982] 
+[17:09:23.983] > Build failed because of webpack errors
+[17:09:24.013] Error: Command "npm run build" exited with 1
+[17:09:25.271] 

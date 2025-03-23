@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
+  "buildCommand": "node vercel-build.js",
+  "devCommand": "npm run dev",
+  "framework": null,
   "outputDirectory": "dist",
-  "framework": "vite",
+  "installCommand": "npm install",
   "routes": [
     {
       "src": "/api/(.*)",

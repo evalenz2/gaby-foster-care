@@ -26,11 +26,13 @@ To deploy this application on Vercel, follow these steps:
    - Sign up or log in to [Vercel](https://vercel.com)
    - Click "New Project" and select your repository
 
-2. **Configure the project**
-   - Framework preset: Select "Vite"
-   - Build Command: Keep default (or set to `npm run build`)
-   - Output Directory: Keep default (`dist`)
-   - Install Command: `npm install`
+2. **Use the custom build configuration**
+   - Vercel might detect the project as Next.js, which is incorrect
+   - In project settings, change the Framework to "Other" (not Next.js or Vite)
+   - The vercel.json in the repository contains the correct build configuration:
+     - Build Command: `node vercel-build.js` (custom build script)
+     - Output Directory: `dist`
+     - Install Command: `npm install`
 
 3. **Environment Variables**
    - Add the following environment variables in the Vercel project settings:
@@ -41,9 +43,14 @@ To deploy this application on Vercel, follow these steps:
 
 4. **Deploy**
    - Click "Deploy" and wait for the build to complete
+   - The vercel.json file in the repository will handle the correct configuration
 
 5. **Update Firebase Configuration**
    - In your Firebase console, add your Vercel domain to the authorized domains list under Authentication > Settings
+
+6. **Troubleshooting**
+   - If the deployment fails with Next.js errors, make sure to manually override the framework detection
+   - If you're seeing module resolution errors, check that you're using the correct Node.js version (14.x or higher)
 
 ## Local Development
 
