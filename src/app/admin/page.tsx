@@ -1,18 +1,30 @@
-// src/app/admin/page.tsx
 "use client";
 import { useState, useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../../../firebase";
 import { useRouter } from "next/navigation";
 import { doc, setDoc, getDocs, collection, deleteDoc } from "firebase/firestore";
-import { CldUploadButton } from "next-cloudinary";
+import { CldUploadButton, CldImage, type CloudinaryUploadWidgetResults } from "next-cloudinary";
 import { signOut } from "firebase/auth";
 import { useDropzone } from "react-dropzone";
+
+interface Pet {
+  petId: string;
+  name: string;
+  age: string;
+  breed: string;
+  size: string;
+  gender: string;
+  temperament: string;
+  status: string;
+  photos: string[];
+  videoUrl?: string;
+}
 
 export default function Admin() {
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Partial<Pet>>({
     petId: "",
     name: "",
     age: "",
@@ -24,10 +36,11 @@ export default function Admin() {
     photos: [],
     videoUrl: "",
   });
-  const [message, setMessage] = useState("");
-  const [photoPreviews, setPhotoPreviews] = useState([]);
-  const [pets, setPets] = useState([]);
-  const [editingPet, setEditingPet] = useState(null);
+  const [message, setMessage] = useState<string>("");
+  const [localPreviews, setLocalPreviews] = useState<string[]>([]);
+  const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
+  const [pets, setPets] = useState<Pet[]>([]);
+  const [editingPet, setEditingPet] = useState<string | null>(null);
 
   // Redirect if not logged in
   useEffect(() => {
@@ -39,40 +52,43 @@ export default function Admin() {
     const fetchPets = async () => {
       const querySnapshot = await getDocs(collection(db, "pets"));
       const petList = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
+        petId: doc.id,
         ...doc.data(),
-      }));
+      })) as unknown as Pet[];
       setPets(petList);
     };
     fetchPets();
   }, []);
 
   // Handle form input changes
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   // Handle Cloudinary upload success
-  const handleUpload = (result) => {
-    const url = result.info.secure_url;
-    setFormData((prev) => ({ ...prev, photos: [...prev.photos, url] }));
-    setPhotoPreviews((prev) => [...prev, url]);
+  const handleUpload = (result: CloudinaryUploadWidgetResults) => {
+    if (result.info && typeof result.info === "object" && "secure_url" in result.info) {
+      const url = result.info.secure_url;
+      setFormData((prev) => ({ ...prev, photos: [...(prev.photos || []), url] }));
+      setPhotoPreviews((prev) => [...prev, url]);
+      setLocalPreviews([]);
+    }
   };
 
   // Handle drag-and-drop for local previews
   const { getRootProps, getInputProps } = useDropzone({
-    accept: "image/*",
-    onDrop: (acceptedFiles) => {
+    accept: { "image/*": [] },
+    onDrop: (acceptedFiles: File[]) => {
       const previews = acceptedFiles.map((file) => URL.createObjectURL(file));
-      setPhotoPreviews((prev) => [...prev, ...previews]);
+      setLocalPreviews((prev) => [...prev, ...previews]);
     },
   });
 
   // Submit pet to Firestore (Add or Update)
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await setDoc(doc(db, "pets", formData.petId), formData);
+      await setDoc(doc(db, "pets", formData.petId!), formData);
       setMessage(editingPet ? "Pet updated successfully!" : "Pet added successfully!");
       setFormData({
         petId: "",
@@ -87,31 +103,33 @@ export default function Admin() {
         videoUrl: "",
       });
       setPhotoPreviews([]);
+      setLocalPreviews([]);
       setEditingPet(null);
       // Refresh pet list
       const querySnapshot = await getDocs(collection(db, "pets"));
-      setPets(querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-    } catch (error) {
-      setMessage(`Error: ${error.message}`);
+      setPets(querySnapshot.docs.map((doc) => ({ petId: doc.id, ...doc.data() })) as unknown as Pet[]);
+    } catch (error: unknown) {
+      setMessage(`Error: ${(error as Error).message}`);
     }
   };
 
   // Edit pet
-  const handleEdit = (pet) => {
+  const handleEdit = (pet: Pet) => {
     setFormData(pet);
     setPhotoPreviews(pet.photos);
+    setLocalPreviews([]);
     setEditingPet(pet.petId);
   };
 
   // Delete pet
-  const handleDelete = async (petId) => {
+  const handleDelete = async (petId: string) => {
     if (confirm("Are you sure you want to delete this pet?")) {
       try {
         await deleteDoc(doc(db, "pets", petId));
         setPets(pets.filter((pet) => pet.petId !== petId));
         setMessage("Pet deleted successfully!");
-      } catch (error) {
-        setMessage(`Error: ${error.message}`);
+      } catch (error: unknown) {
+        setMessage(`Error: ${(error as Error).message}`);
       }
     }
   };
@@ -145,7 +163,7 @@ export default function Admin() {
           placeholder="Pet ID (from shelter)"
           className="w-full p-2 border rounded"
           required
-          disabled={editingPet} // Prevent changing petId when editing
+          disabled={!!editingPet}
         />
         <input
           name="name"
@@ -233,8 +251,26 @@ export default function Admin() {
           Upload Photos to Cloudinary
         </CldUploadButton>
         <div className="grid grid-cols-3 gap-2 mt-2">
+          {/* Local previews before upload */}
+          {localPreviews.map((url, idx) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={`local-${idx}`}
+              src={url}
+              alt="Local Preview"
+              className="w-full h-20 object-cover"
+            />
+          ))}
+          {/* Cloudinary previews after upload */}
           {photoPreviews.map((url, idx) => (
-            <img key={idx} src={url} alt="Preview" className="w-full h-20 object-cover" />
+            <CldImage
+              key={`cloudinary-${idx}`}
+              width="300"
+              height="200"
+              src={url}
+              alt="Cloudinary Preview"
+              className="w-full h-20 object-cover"
+            />
           ))}
         </div>
 
