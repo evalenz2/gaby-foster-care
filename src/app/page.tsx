@@ -31,27 +31,26 @@ export default function Home() {
   // Fetch pets from Firestore with server-side filtering
   useEffect(() => {
     const fetchPets = async () => {
-      let q = collection(db, "pets");
+      const constraints = [];
 
       // Apply filters using Firestore queries
       if (filters.breed) {
-        q = query(q, where("breed", "==", filters.breed));
+        constraints.push(where("breed", "==", filters.breed));
       }
       if (filters.size) {
-        q = query(q, where("size", "==", filters.size));
+        constraints.push(where("size", "==", filters.size));
       }
       if (filters.gender) {
-        q = query(q, where("gender", "==", filters.gender));
+        constraints.push(where("gender", "==", filters.gender));
       }
       if (filters.status) {
-        q = query(q, where("status", "==", filters.status));
+        constraints.push(where("status", "==", filters.status));
       }
       if (searchId) {
-        q = query(q, where("petId", "==", searchId));
+        constraints.push(where("petId", "==", searchId));
       }
-      // Note: Firestore doesn't support direct numerical comparisons for 'age' since it's stored as a string.
-      // You may need to store 'age' as a number in Firestore or handle this filter client-side.
 
+      const q = query(collection(db, "pets"), ...constraints);
       const querySnapshot = await getDocs(q);
       const petList = querySnapshot.docs.map((doc) => ({
         petId: doc.id,
