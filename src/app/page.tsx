@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { db } from "../../firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { CldImage } from "next-cloudinary";
 
 interface Pet {
@@ -28,32 +28,49 @@ export default function Home() {
   });
   const [searchId, setSearchId] = useState("");
 
-  // Fetch pets from Firestore
+  // Fetch pets from Firestore with server-side filtering
   useEffect(() => {
     const fetchPets = async () => {
-      const querySnapshot = await getDocs(collection(db, "pets"));
+      let q = collection(db, "pets");
+
+      // Apply filters using Firestore queries
+      if (filters.breed) {
+        q = query(q, where("breed", "==", filters.breed));
+      }
+      if (filters.size) {
+        q = query(q, where("size", "==", filters.size));
+      }
+      if (filters.gender) {
+        q = query(q, where("gender", "==", filters.gender));
+      }
+      if (filters.status) {
+        q = query(q, where("status", "==", filters.status));
+      }
+      if (searchId) {
+        q = query(q, where("petId", "==", searchId));
+      }
+      // Note: Firestore doesn't support direct numerical comparisons for 'age' since it's stored as a string.
+      // You may need to store 'age' as a number in Firestore or handle this filter client-side.
+
+      const querySnapshot = await getDocs(q);
       const petList = querySnapshot.docs.map((doc) => ({
-        petId: doc.id, // Rename 'id' to 'petId'
+        petId: doc.id,
         ...doc.data(),
       })) as unknown as Pet[];
       setPets(petList);
     };
     fetchPets();
-  }, []);
+  }, [filters, searchId]); // Re-run when filters or searchId change
 
   // Handle filter changes
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
     setFilters({ ...filters, [e.target.name]: e.target.value });
   };
 
-  // Filter and search logic
-  const filteredPets = pets
-    .filter((pet) => (searchId ? pet.petId === searchId : true))
-    .filter((pet) => (filters.breed ? pet.breed === filters.breed : true))
-    .filter((pet) => (filters.age ? Number(pet.age) === Number(filters.age) : true))
-    .filter((pet) => (filters.size ? pet.size === filters.size : true))
-    .filter((pet) => (filters.gender ? pet.gender === filters.gender : true))
-    .filter((pet) => (filters.status ? pet.status === filters.status : true));
+  // Filter age client-side (since Firestore can't compare strings numerically)
+  const filteredPets = pets.filter((pet) =>
+    filters.age ? Number(pet.age) === Number(filters.age) : true
+  );
 
   return (
     <div className="p-6">
